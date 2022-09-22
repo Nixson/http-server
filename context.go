@@ -15,7 +15,7 @@ import (
 )
 
 type ContextInterface interface {
-	SetContext(Context)
+	SetContext(c *Context)
 }
 
 type Context struct {
@@ -34,15 +34,15 @@ var params *Params
 func (c *Context) Access(access uint) bool {
 	return access <= c.Session.Access
 }
-func getInfo(path string) info {
+func getInfo(path string) Info {
 	nf, ok := method[path]
 	if ok {
 		return nf
 	}
 	pathList := strings.Split(path, "/")
 	if len(pathList) < 1 {
-		return info{
-			access: "auth",
+		return Info{
+			Access: "auth",
 		}
 	}
 	pathList = pathList[:len(pathList)-1]
@@ -50,7 +50,7 @@ func getInfo(path string) info {
 }
 func (c *Context) IsGranted() bool {
 	inf := getInfo(c.Path)
-	if inf.access == "all" {
+	if inf.Access == "all" {
 		return true
 	}
 	if params.Env.GetBool("security.enable") {
@@ -78,13 +78,13 @@ func (c *Context) IsGranted() bool {
 	return true
 }
 
-type info struct {
-	index  int
-	access string
-	handle *ContextInterface
+type Info struct {
+	Index  int
+	Access string
+	Handle *ContextInterface
 }
 
-var method = make(map[string]info)
+var method = make(map[string]Info)
 
 func InitController(name string, controller *ContextInterface) {
 	annotationList := params.Annotation.Get("Controller")
@@ -107,10 +107,10 @@ func InitController(name string, controller *ContextInterface) {
 		if !ok {
 			access = "auth"
 		}
-		inf := info{
-			index:  _method.Index,
-			access: access,
-			handle: controller,
+		inf := Info{
+			Index:  _method.Index,
+			Access: access,
+			Handle: controller,
 		}
 		path, hasPath := annotationMapEl.Parameters["path"]
 		if !hasPath {
@@ -126,7 +126,8 @@ func (c *Context) Call() {
 	if !ok {
 		return
 	}
-	reflect.ValueOf(info.handle).Method(info.index).Call(in)
+	info.Handle.SetContext(c)
+	reflect.ValueOf(info.Handle).Method(info.Index).Call(in)
 }
 func (c *Context) Write(iface interface{}) {
 	marshal, _ := json.Marshal(iface)
