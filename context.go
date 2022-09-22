@@ -8,12 +8,15 @@ import (
 	"github.com/Nixson/http-server/session"
 	"github.com/Nixson/logNx"
 	"github.com/dgrijalva/jwt-go"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
 	"time"
 )
+
+type ContextInterface interface {
+	SetContext(Context)
+}
 
 type Context struct {
 	Request  *http.Request
@@ -24,7 +27,6 @@ type Context struct {
 type Params struct {
 	Annotation *annotation.Annotation
 	Env        *environment.Env
-	Logger     log.Logger
 }
 
 var params *Params
@@ -79,12 +81,12 @@ func (c *Context) IsGranted() bool {
 type info struct {
 	index  int
 	access string
-	handle *interface{}
+	handle *ContextInterface
 }
 
 var method = make(map[string]info)
 
-func InitController(name string, controller *interface{}) {
+func InitController(name string, controller *ContextInterface) {
 	annotationList := params.Annotation.Get("Controller")
 	var annotationMap map[string]annotation.Element
 	for _, annotationMapEl := range annotationList {
