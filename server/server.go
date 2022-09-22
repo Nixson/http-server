@@ -1,13 +1,19 @@
-package http_server
+package server
 
 import (
 	"context"
+	"embed"
+	"github.com/Nixson/annotation"
+	"github.com/Nixson/environment"
 	"net/http"
 	"os"
 )
 
-func InitServer(param *Params) {
-	params = param
+func InitServer(emb embed.FS, env *environment.Env) {
+	params = &Params{
+		Annotation: annotation.InitAnnotation(emb),
+		Env:        env,
+	}
 	done := make(chan os.Signal, 1)
 	mux := http.NewServeMux()
 	mux.Handle("/", http.HandlerFunc(handle))

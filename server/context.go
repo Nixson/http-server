@@ -1,9 +1,9 @@
-package http_server
+package server
 
 import (
 	"encoding/json"
 	"fmt"
-	annotation "github.com/Nixson/annotation/method"
+	"github.com/Nixson/annotation"
 	"github.com/Nixson/environment"
 	"github.com/Nixson/http-server/session"
 	"github.com/Nixson/logNx"
@@ -126,8 +126,10 @@ func (c *Context) Call() {
 	if !ok {
 		return
 	}
-	info.Handle.SetContext(c)
-	reflect.ValueOf(info.Handle).Method(info.Index).Call(in)
+	var hdl ContextInterface
+	hdl = *info.Handle
+	hdl.SetContext(c)
+	reflect.ValueOf(&hdl).Method(info.Index).Call(in)
 }
 func (c *Context) Write(iface interface{}) {
 	marshal, _ := json.Marshal(iface)
