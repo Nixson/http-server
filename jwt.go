@@ -15,9 +15,9 @@ type openTokenResponse struct {
 }
 
 func JWTTokenOpenKey() (*string, error) {
-	if params.env.GetBool("security.enable") {
+	if params.Env.GetBool("security.enable") {
 		if jwtTokenOpenKey == nil {
-			tokenKeyUrl := params.env.GetString("security.token")
+			tokenKeyUrl := params.Env.GetString("security.token")
 
 			client := &http.Client{}
 			req, _ := http.NewRequest("GET", tokenKeyUrl, nil)

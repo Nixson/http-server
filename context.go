@@ -3,7 +3,7 @@ package http_server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/Nixson/annotation"
+	annotation "github.com/Nixson/annotation/method"
 	"github.com/Nixson/environment"
 	"github.com/Nixson/http-server/session"
 	"github.com/Nixson/logNx"
@@ -22,9 +22,9 @@ type Context struct {
 	Path     string
 }
 type Params struct {
-	annotation *annotation.Annotation
-	env        *environment.Env
-	logger     log.Logger
+	Annotation *annotation.Annotation
+	Env        *environment.Env
+	Logger     log.Logger
 }
 
 var params *Params
@@ -51,7 +51,7 @@ func (c *Context) IsGranted() bool {
 	if inf.access == "all" {
 		return true
 	}
-	if params.env.GetBool("security.enable") {
+	if params.Env.GetBool("security.enable") {
 		tokenKey, err := JWTTokenOpenKey()
 		if err != nil {
 			c.Response.WriteHeader(500)
@@ -85,7 +85,7 @@ type info struct {
 var method = make(map[string]info)
 
 func InitController(name string, controller *interface{}) {
-	annotationList := params.annotation.Get("Controller")
+	annotationList := params.Annotation.Get("Controller")
 	var annotationMap map[string]annotation.Element
 	for _, annotationMapEl := range annotationList {
 		if annotationMapEl.StructName == name {

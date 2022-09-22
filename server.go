@@ -12,7 +12,7 @@ func InitServer(param *Params) {
 	mux := http.NewServeMux()
 	mux.Handle("/", http.HandlerFunc(handle))
 	srv := &http.Server{
-		Addr:    params.env.GetString("server.port"),
+		Addr:    params.Env.GetString("server.port"),
 		Handler: mux,
 	}
 	ctx, cancel := context.WithCancel(context.Background())
