@@ -101,7 +101,7 @@ func InitController(name string, controller *ContextInterface) {
 			}
 		}
 	}
-	_struct := reflect.TypeOf(controller)
+	_struct := reflect.TypeOf(*controller)
 	for index := 0; index < _struct.NumMethod(); index++ {
 		_method := _struct.Method(index)
 		annotationMapEl, ok := annotationMap[_method.Name]
