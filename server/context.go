@@ -24,12 +24,6 @@ type Context struct {
 	Session  session.Session
 	Path     string
 }
-type Params struct {
-	Annotation *annotation.Annotation
-	Env        *environment.Env
-}
-
-var params *Params
 
 func (c *Context) Access(access uint) bool {
 	return access <= c.Session.Access
@@ -58,7 +52,7 @@ func (c *Context) IsGranted() bool {
 	if inf.Access == "all" {
 		return true
 	}
-	if params.Env.GetBool("security.enable") {
+	if environment.GetEnv().GetBool("security.enable") {
 		tokenKey, err := JWTTokenOpenKey()
 		if err != nil {
 			c.Response.WriteHeader(500)
@@ -92,7 +86,7 @@ type Info struct {
 var method = make(map[string]Info)
 
 func InitController(name string, controller *ContextInterface) {
-	annotationList := params.Annotation.Get("controller")
+	annotationList := annotation.Get("controller")
 	annotationMap := make(map[string]annotation.Element)
 	for _, annotationMapEl := range annotationList {
 		if annotationMapEl.StructName == name {
@@ -140,7 +134,7 @@ func (c *Context) Write(iface interface{}) {
 	marshal, _ := json.Marshal(iface)
 	_, err := c.Response.Write(marshal)
 	if err != nil {
-		logNx.GetLogger().Error(err.Error())
+		logNx.Get().Error(err.Error())
 	}
 }
 func (c *Context) Error(status int, iface interface{}) {
