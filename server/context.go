@@ -134,7 +134,7 @@ func (c *Context) Call() {
 	var hdl ContextInterface
 	hdl = *info.Handle
 	hdl.SetContext(c)
-	reflect.ValueOf(&hdl).Method(info.Index).Call(in)
+	reflect.ValueOf(hdl).Method(info.Index).Call(in)
 }
 func (c *Context) Write(iface interface{}) {
 	marshal, _ := json.Marshal(iface)
