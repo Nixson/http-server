@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"github.com/Nixson/environment"
 	"io/ioutil"
 	"net/http"
 )
@@ -15,9 +16,10 @@ type openTokenResponse struct {
 }
 
 func JWTTokenOpenKey() (*string, error) {
-	if params.Env.GetBool("security.enable") {
+	env := environment.GetEnv()
+	if env.GetBool("security.enable") {
 		if jwtTokenOpenKey == nil {
-			tokenKeyUrl := params.Env.GetString("security.token")
+			tokenKeyUrl := env.GetString("security.token")
 
 			client := &http.Client{}
 			req, _ := http.NewRequest("GET", tokenKeyUrl, nil)
