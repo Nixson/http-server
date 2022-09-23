@@ -3,7 +3,7 @@ module github.com/Nixson/http-server
 go 1.19
 
 require (
-	github.com/Nixson/annotation v0.0.2
+	github.com/Nixson/annotation v0.0.3
 	github.com/Nixson/environment v0.0.12
 	github.com/Nixson/logNx v0.0.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
