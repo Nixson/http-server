@@ -46,8 +46,9 @@ func InitServer(emb embed.FS, env *environment.Env, funcsInit []func()) {
 	mux := http.NewServeMux()
 	mux.Handle("/", http.HandlerFunc(handle))
 	srv = &http.Server{
-		Addr:    params.Env.GetString("server.port"),
-		Handler: mux,
+		Addr:           params.Env.GetString("server.port"),
+		Handler:        mux,
+		MaxHeaderBytes: params.Env.GetInt("server.maxSize"),
 	}
 
 	if funcsInit != nil && len(funcsInit) > 0 {

@@ -34,22 +34,27 @@ var params *Params
 func (c *Context) Access(access uint) bool {
 	return access <= c.Session.Access
 }
-func getInfo(path string) Info {
+func getInfo(path string) (*Info, error) {
 	nf, ok := method[path]
 	if ok {
-		return nf
+		return &nf, nil
+	}
+	if path == "" {
+		return nil, fmt.Errorf("404")
 	}
 	pathList := strings.Split(path, "/")
 	if len(pathList) < 1 {
-		return Info{
-			Access: "auth",
-		}
+		return nil, fmt.Errorf("404")
 	}
 	pathList = pathList[:len(pathList)-1]
 	return getInfo(strings.Join(pathList, "/"))
 }
 func (c *Context) IsGranted() bool {
-	inf := getInfo(c.Path)
+	inf, err := getInfo(c.Path)
+	if err != nil {
+		c.Error(http.StatusNotFound, "URL not found")
+		return false
+	}
 	if inf.Access == "all" {
 		return true
 	}
