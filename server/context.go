@@ -93,7 +93,7 @@ var method = make(map[string]Info)
 
 func InitController(name string, controller *ContextInterface) {
 	annotationList := params.Annotation.Get("controller")
-	var annotationMap map[string]annotation.Element
+	annotationMap := make(map[string]annotation.Element)
 	for _, annotationMapEl := range annotationList {
 		if annotationMapEl.StructName == name {
 			for _, child := range annotationMapEl.Children {
