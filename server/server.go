@@ -5,18 +5,32 @@ import (
 	"embed"
 	"github.com/Nixson/annotation"
 	"github.com/Nixson/environment"
+	"github.com/Nixson/logNx"
 	"net/http"
 	"os"
 )
 
-func Run() {
+func RunWithSignal() {
 	done := make(chan os.Signal, 1)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	logNx.GetLogger().Info("listen " + srv.Addr)
 	go func() {
 		_ = srv.ListenAndServe()
 	}()
 	<-done
+	logNx.GetLogger().Info("server done")
+	_ = srv.Close()
+	_ = srv.Shutdown(ctx)
+
+}
+
+func Run() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	logNx.GetLogger().Info("listen " + srv.Addr)
+	_ = srv.ListenAndServe()
+	logNx.GetLogger().Info("server done")
 	_ = srv.Close()
 	_ = srv.Shutdown(ctx)
 
@@ -35,6 +49,7 @@ func InitServer(emb embed.FS, env *environment.Env, funcsInit []func()) {
 		Addr:    params.Env.GetString("server.port"),
 		Handler: mux,
 	}
+
 	if funcsInit != nil && len(funcsInit) > 0 {
 		for _, funcInit := range funcsInit {
 			funcInit()
